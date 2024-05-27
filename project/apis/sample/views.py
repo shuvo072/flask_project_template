@@ -4,11 +4,9 @@ from flask import request
 from flask_restx import Namespace, Resource
 
 from project.apis.sample.models import sample_model
-from project.utils.autentication import token_required
+from project.utils.authentication import token_required
 
-sample_namespace = Namespace(
-    "Sample", description="Sample CRUD"
-)
+sample_namespace = Namespace("Sample", description="Sample CRUD")
 
 sample_namespace.add_model("Sample", sample_model)
 
@@ -38,7 +36,6 @@ class SampleClass(Resource):
             sample_namespace.abort(
                 HTTPStatus.BAD_REQUEST, message=str(e), status="error"
             )
-
 
 
 sample_namespace.add_resource(SampleClass, "")
