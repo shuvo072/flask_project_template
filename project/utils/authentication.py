@@ -1,25 +1,24 @@
+import datetime
 from functools import wraps
 
 import jwt
-import datetime
 from flask import abort
 from flask import current_app as app
 from flask import request
 
+
 def encode_auth_token(email):
     try:
         payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
-            'iat': datetime.datetime.utcnow(),
-            'sub': email
+            "exp": datetime.datetime.utcnow()
+            + datetime.timedelta(days=0, seconds=3600),
+            "iat": datetime.datetime.utcnow(),
+            "sub": email,
         }
-        return jwt.encode(
-            payload,
-            app.config.get('SECRET_KEY'),
-            algorithm='HS256'
-        )
+        return jwt.encode(payload, app.config.get("SECRET_KEY"), algorithm="HS256")
     except Exception as e:
         return e
+
 
 def decode_auth_token(auth_token):
     try:
@@ -46,15 +45,18 @@ def token_required(f):
             abort(401, "Invalid token. Please log in again.")
         setattr(decorated, "email", payload)
         return f(*args, **kwargs)
+
     return decorated
+
 
 def check_internal_api_key(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        api_key = request.headers.get('X-API-KEY')
+        api_key = request.headers.get("X-API-KEY")
         if not api_key:
             abort(404, "api key not found!!")
         if api_key != app.config.get("X_API_KEY"):
             abort(401, "Invalid Key")
         return f(*args, **kwargs)
+
     return decorated
